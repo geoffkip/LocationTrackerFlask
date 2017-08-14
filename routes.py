@@ -4,7 +4,7 @@ from forms import SignupForm, LoginForm
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/learningflask'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/geoffrey.kip'
 db.init_app(app)
 
 app.secret_key = "development-key"
@@ -19,6 +19,8 @@ def about():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+  if 'email' in session:
+      return redirect(url_for('home'))
   form = SignupForm()
 
   if request.method == "POST":
@@ -37,6 +39,8 @@ def signup():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+  if 'email' in session:
+      return redirect(url_for('home'))
   form = LoginForm()
 
   if request.method == "POST":
@@ -63,7 +67,10 @@ def logout():
 
 @app.route("/home", methods=["GET", "POST"])
 def home():
-  return render_template("home.html")
+ if 'email' not in session:
+     return redirect(url_for('login'))
+
+     return render_template("home.html")
 
 if __name__ == "__main__":
   app.run(debug=True)
